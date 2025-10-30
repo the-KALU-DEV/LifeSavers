@@ -1,210 +1,76 @@
 # LifeSavers
 
-## 1. Welcome
-Whatsapp-powered blood donation platform connecting donors and hospitals in real time.
+**LifeSavers** is an **AI-powered, WhatsApp-native blood donation network** that bridges hospitals and donors through automation, transparency, and real-time coordination. It saves lives faster, ensures safe and traceable donations, and rewards the heroes who make it possible — all within a familiar chat interface.
 
-
-## 🗂️ 2. Folder Structure
-
-```
-whatsapp-bot/
-│
-├── .env
-├── package.json
-├── server.js
-│
-├── src/
-│   ├── config/
-│   │   └── whatsapp.js          # Cloud API setup
-│   ├── services/
-│   │   └── openaiService.js     # Optional AI integration
-│   ├── controllers/
-│   │   └── webhookController.js # Main webhook logic
-│   ├── utils/
-│   │   └── sendMessage.js       # Helper to send WhatsApp messages
-│   └── routes/
-│       └── webhook.js           # Webhook route definition
-│
-└── README.md
-```
+## What We Do?
+Our system is a fully automated blood donation and management system that connects verified blood donors with hospitals through **WhatsApp automation**. We digitize the end-to-end blood supply process from donor registration to hospital request fulfillment — with real-time tracking, payments, and medical validation.
 
 ---
 
-## ⚙️ 3. Installation
+### 🩸 **For Donors**
 
-```bash
-mkdir whatsapp-bot && cd whatsapp-bot
-npm init -y
-npm install express axios dotenv body-parser
-```
+LifeSavers turns blood donation into a seamless, rewarding experience.
+Donors register through WhatsApp, complete digital KYC and medical screening, and receive instant alerts for nearby blood requests. When a request is accepted, location tracking confirms hospital arrival, and payouts are automated after donation. Post-donation health checks and reminders ensure safe, repeat participation.
 
-(For AI integration)
+**Key Features:**
 
-```bash
-npm install openai
-```
-
-Create a `.env` file:
-
-```bash
-WHATSAPP_TOKEN=your_whatsapp_access_token
-VERIFY_TOKEN=your_webhook_verify_token
-PHONE_NUMBER_ID=your_meta_phone_number_id
-OPENAI_API_KEY=your_openai_key   # Optional
-```
+* WhatsApp-based onboarding with KYC and health data collection
+* Smart matching with nearby hospitals needing their blood type
+* Live updates and hospital check-ins
+* Instant donor payment ($10–$50/donation)
+* Health follow-ups and donation reminders
 
 ---
 
-## 🚀 4. Code Setup
+### 🏥 **For Hospitals**
 
-### **server.js**
+Hospitals use LifeSavers to register, manage staff, and instantly access verified donors during emergencies. The system operates on a **credit-based model**, enabling hospitals to fund blood requests and track spending, staff activity, and donations in real time.
 
-```js
-import express from "express";
-import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import webhookRouter from "./src/routes/webhook.js";
+**Key Features:**
 
-dotenv.config();
-const app = express();
-
-app.use(bodyParser.json());
-app.use("/webhook", webhookRouter);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-```
+* Automated hospital verification and admin onboarding
+* Staff management via PIN-based access
+* Credit purchase, financial dashboards, and spend reports
+* Emergency override system for critical shortages
+* Compliance and financial reporting tools
 
 ---
 
-### **src/routes/webhook.js**
+### 👨‍⚕️ **For Medical Staff & Labs**
 
-```js
-import express from "express";
-import { handleWebhook, verifyWebhook } from "../controllers/webhookController.js";
+Doctors, nurses, and lab scientists manage donor requests and track donation progress through the WhatsApp interface.
+Lab scientists handle donor testing, record donation outcomes, and enforce quality control measures like quarantining failed samples.
 
-const router = express.Router();
+**Key Features:**
 
-// For WhatsApp verification
-router.get("/", verifyWebhook);
-
-// For receiving messages
-router.post("/", handleWebhook);
-
-export default router;
-```
+* Create and monitor live blood requests
+* Track donor pledges, arrivals, and donations
+* Conduct donor tests and log results
+* Quality assurance and incident reporting
+* End-of-shift summaries and inventory checks
 
 ---
 
-### **src/controllers/webhookController.js**
+#### 💰 **Financial Ecosystem**
 
-```js
-import sendMessage from "../utils/sendMessage.js";
-import { getAIReply } from "../services/openaiService.js";
+LifeSavers uses a **credit system** where:
 
-export const verifyWebhook = (req, res) => {
-  const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
-
-  if (mode && token === VERIFY_TOKEN) {
-    return res.status(200).send(challenge);
-  } else {
-    return res.sendStatus(403);
-  }
-};
-
-export const handleWebhook = async (req, res) => {
-  try {
-    const entry = req.body.entry?.[0];
-    const message = entry?.changes?.[0]?.value?.messages?.[0];
-    if (!message) return res.sendStatus(200);
-
-    const from = message.from;
-    const text = message.text?.body;
-
-    console.log(`📩 Message from ${from}: ${text}`);
-
-    // Basic reply logic
-    let reply = "Hello 👋, how can I help you today?";
-
-    // Optional: AI response
-    if (text) {
-      reply = await getAIReply(text);
-    }
-
-    await sendMessage(from, reply);
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Webhook error:", err);
-    res.sendStatus(500);
-  }
-};
-```
+* 1 Connect = $10
+* Blood costs vary by rarity and urgency (from $50 to $150/unit × 1.5–3.0x multipliers)
+* Donors earn 40–60% of total cost per unit
+* Platform revenue: 15% service fee + 2.9% processing fee
+* Hospitals receive automated invoices and refunds for unfulfilled units
 
 ---
 
-### **src/utils/sendMessage.js**
+#### ⚙️ **Smart Automation & Edge Handling**
 
-```js
-import axios from "axios";
-import dotenv from "dotenv";
-dotenv.config();
+LifeSavers handles critical real-world and system challenges automatically:
 
-const { WHATSAPP_TOKEN, PHONE_NUMBER_ID } = process.env;
+* Donor test failures, no-shows, and health incidents
+* Blood bag quality failures and quarantines
+* Hospital overdrafts and emergency approvals
+* City-wide alerts for critical shortages
+* Queue management, payment retries, and location corrections
 
-export default async function sendMessage(to, message) {
-  const url = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
-
-  await axios.post(
-    url,
-    {
-      messaging_product: "whatsapp",
-      to,
-      text: { body: message },
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-}
-```
-
----
-
-### **src/services/openaiService.js**
-
-```js
-import OpenAI from "openai";
-import dotenv from "dotenv";
-dotenv.config();
-
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-export async function getAIReply(prompt) {
-  const completion = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-  });
-
-  return completion.choices[0].message.content;
-}
-```
-
----
-
-## 🧠 5. How It Works
-
-1. Meta sends a **GET** request to your webhook URL for verification (you respond with the challenge).
-2. When a user sends a message:
-
-   * WhatsApp Cloud API sends a **POST** request to your webhook.
-   * You process it and reply using `sendMessage()`.
-3. The reply appears instantly in the user’s WhatsApp chat.
-
----
 
