@@ -15,14 +15,26 @@ export async function handleIncomingMessage(req: Request, res: Response) {
         const from = req.body.From;
         const body = req.body.Body?.trim();
 
-        console.log('Received message:', { from, body });
+        const mediaUrl = req.body.MediaUrl0;
+        const numMedia = parseInt(req.body.NumMedia) || 0;
 
-        if (!from || !body) {
-            console.warn('Missing from or body in request');
+        console.log('Received message:', { 
+            from, 
+            body,
+            mediaUrl,
+            numMedia 
+        });
+
+        if (!from) {
+            console.warn('Missing from in request');
             return;
         }
 
-        await startBot(from, body);
+        if (numMedia > 0 && mediaUrl) {
+            await startBot(from, "", mediaUrl); // pass text as empty, and mediaUrl separately
+        } else if (body) {
+            await startBot(from, body, null);
+        }
 
     } catch (err) {
         console.error("Error handling message:", err);

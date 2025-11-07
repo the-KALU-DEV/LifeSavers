@@ -47,3 +47,12 @@ export enum RegistrationStep {
     CONFIRM = "confirm",
     COMPLETE = "complete",
 }
+
+export enum VerificationStep {
+    ASK_NIN = "ask_nin",
+    ASK_SELFIE = "ask_selfie",
+    ASK_ID = "ask_id",
+    ASK_BANK = "ask_bank",
+    COMPLETE = "complete",
+    VERIFICATION_FAILED = "verification_failed",
+}

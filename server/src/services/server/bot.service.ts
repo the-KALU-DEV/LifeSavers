@@ -4,7 +4,7 @@ import { User } from "../../models/User";
 import { processFlow } from "./donor.service";
 import { UserService } from "./user.service";
 
-export async function startBot(phoneNumber: string, message: string) {
+export async function startBot(phoneNumber: string, message: string, mediaUrl?: string | null) {
 
     let user =  await UserService.getUserByPhone(phoneNumber);
 
