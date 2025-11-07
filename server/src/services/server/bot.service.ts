@@ -54,6 +54,9 @@ export async function processFlow(
 
         case BotFlow.DONORVERIFICATION:
             //await processVerification(from, message);
+            // export async function processVerification(currentStep: verificationState, from: string, message: string, mediaUrl?: string | null) {
+            //     await VerificationHandler.processVerification(currentStep, from, message, mediaUrl);
+            // }
             break;
         case BotFlow.MATCHING:
             await sendWhatsappMessage(
