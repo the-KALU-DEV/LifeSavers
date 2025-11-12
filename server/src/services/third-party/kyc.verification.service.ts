@@ -1,17 +1,30 @@
 import axios from "axios";
 import AWS from "aws-sdk";
 import dotenv from "dotenv";
+import {
+  API_CONSTANTS,
+  TIMEOUT_CONSTANTS,
+  FILE_CONSTANTS,
+  NIN_CONSTANTS,
+  FACE_COMPARE_CONSTANTS,
+  S3_CONSTANTS
+} from "../../utils/constants";
+import { 
+  AWS_ACCESS_KEY_ID, 
+  AWS_REGION, 
+  AWS_S3_BUCKET, 
+  AWS_SECRET_ACCESS_KEY, 
+  DOJAH_APP_ID, 
+  DOJAH_BASE_URL, 
+  DOJAH_SECRET_KEY 
+} from "../../config/env";
 
 dotenv.config();
 
-const DOJAH_BASE_URL = "https://api.dojah.io/api/v1";
-const DOJAH_APP_ID = process.env.DOJAH_APP_ID!;
-const DOJAH_SECRET_KEY = process.env.DOJAH_SECRET_KEY!;
-
 const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  region: process.env.AWS_REGION!,
+  accessKeyId: AWS_ACCESS_KEY_ID!,
+  secretAccessKey: AWS_SECRET_ACCESS_KEY!,
+  region: AWS_REGION!
 });
 
 export class VerificationService {
@@ -24,14 +37,14 @@ export class VerificationService {
     try {
       const cleanNIN = nin.trim().replace(/\s+/g, '');
       
-      if (!/^\d{11}$/.test(cleanNIN)) {
+      if (!NIN_CONSTANTS.VALIDATION_REGEX.test(cleanNIN)) {
         return { 
           success: false, 
-          message: "Invalid NIN format. Must be exactly 11 digits." 
+          message: NIN_CONSTANTS.ERROR_MESSAGES.INVALID_FORMAT
         };
       }
 
-      const url = `${DOJAH_BASE_URL}/kyc/nin`;
+      const url = `${DOJAH_BASE_URL}${API_CONSTANTS.DOJAH_NIN_ENDPOINT}`;
       const response = await axios.get(url, {
         headers: {
           "AppId": DOJAH_APP_ID,
@@ -39,37 +52,36 @@ export class VerificationService {
           "Content-Type": "application/json",
         },
         params: { nin: cleanNIN },
-        timeout: 30000,
+        timeout: TIMEOUT_CONSTANTS.NIN_VERIFICATION,
       });
 
       if (response.data?.entity) {
         const entity = response.data.entity;
-        
         const isValid = entity.valid === true || entity.status?.toLowerCase() === 'valid';
         
         return {
           success: isValid,
           data: entity,
-          message: isValid ? "NIN verification successful" : "NIN is not valid or active",
+          message: isValid ? FACE_COMPARE_CONSTANTS.SUCCESS_MESSAGE : NIN_CONSTANTS.ERROR_MESSAGES.INVALID_ACTIVE,
           confidence: 100
         };
       } else {
         return { 
           success: false, 
-          message: "No NIN record found. Please check and try again." 
+          message: NIN_CONSTANTS.ERROR_MESSAGES.NOT_FOUND
         };
       }
     } catch (err: any) {
       console.error("NIN verification error:", err.response?.data || err.message);
       
-      let errorMessage = "NIN verification service temporarily unavailable";
+      let errorMessage = API_CONSTANTS.ERROR_MESSAGES.SERVICE_UNAVAILABLE;
       
-      if (err.response?.status === 404) {
-        errorMessage = "NIN not found in the system. Please check the number.";
-      } else if (err.response?.status === 429) {
-        errorMessage = "Too many verification attempts. Please try again in a few minutes.";
+      if (err.response?.status === API_CONSTANTS.HTTP_STATUS.NOT_FOUND) {
+        errorMessage = API_CONSTANTS.ERROR_MESSAGES.NIN_NOT_FOUND;
+      } else if (err.response?.status === API_CONSTANTS.HTTP_STATUS.TOO_MANY_REQUESTS) {
+        errorMessage = API_CONSTANTS.ERROR_MESSAGES.TOO_MANY_ATTEMPTS;
       } else if (err.code === 'ECONNABORTED') {
-        errorMessage = "Verification timeout. Please try again.";
+        errorMessage = API_CONSTANTS.ERROR_MESSAGES.VERIFICATION_TIMEOUT;
       }
       
       return { 
@@ -84,6 +96,7 @@ export class VerificationService {
       if (!mediaUrl || !mediaUrl.startsWith('https://')) {
         throw new Error("Invalid media URL provided");
       }
+
       const mediaResponse = await axios.get(mediaUrl, {
         responseType: "arraybuffer",
         headers: {
@@ -91,8 +104,8 @@ export class VerificationService {
             `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`
           ).toString("base64")}`,
         },
-        timeout: 45000, 
-        maxContentLength: 10 * 1024 * 1024, // 10MB max
+        timeout: TIMEOUT_CONSTANTS.MEDIA_DOWNLOAD,
+        maxContentLength: FILE_CONSTANTS.MAX_CONTENT_LENGTH,
       });
 
       const contentType = mediaResponse.headers["content-type"];
@@ -101,17 +114,16 @@ export class VerificationService {
       }
 
       const fileSize = mediaResponse.data.length;
-      if (fileSize > 5 * 1024 * 1024) { // 5MB max
+      if (fileSize > FILE_CONSTANTS.MAX_FILE_SIZE) {
         throw new Error("File size too large. Maximum 5MB allowed.");
       }
 
-      const fileExtension = contentType.split("/")[1] || 'jpg';
+      const fileExtension = contentType.split("/")[1] || S3_CONSTANTS.FILE_EXTENSIONS.DEFAULT;
       const timestamp = Date.now();
-      const fileName = `verifications/${phoneNumber}/${type}-${timestamp}.${fileExtension}`;
+      const fileName = `${S3_CONSTANTS.UPLOAD_PREFIX}/${phoneNumber}/${type}-${timestamp}.${fileExtension}`;
 
-      // Upload to S3 with metadata
       const uploadParams = {
-        Bucket: process.env.AWS_S3_BUCKET!,
+        Bucket: AWS_S3_BUCKET!,
         Key: fileName,
         Body: mediaResponse.data,
         ContentType: contentType,
@@ -120,7 +132,6 @@ export class VerificationService {
           'upload-type': type,
           'upload-timestamp': timestamp.toString()
         },
-        // ACL: "private", // Remove ACL if bucket policy handles permissions
       };
 
       const result = await s3.upload(uploadParams).promise();
@@ -150,7 +161,6 @@ export class VerificationService {
     result?: any;
   }> {
     try {
-      // Validate the URLs
       if (!selfieUrl || !idUrl) {
         return { 
           success: false, 
@@ -158,7 +168,7 @@ export class VerificationService {
         };
       }
 
-      const url = `${DOJAH_BASE_URL}/kyc/face/compare`;
+      const url = `${DOJAH_BASE_URL}${API_CONSTANTS.DOJAH_FACE_COMPARE_ENDPOINT}`;
       const response = await axios.post(
         url,
         { 
@@ -171,7 +181,7 @@ export class VerificationService {
             "Authorization": DOJAH_SECRET_KEY,
             "Content-Type": "application/json",
           },
-          timeout: 45000, 
+          timeout: TIMEOUT_CONSTANTS.FACE_COMPARE,
         }
       );
 
@@ -179,8 +189,7 @@ export class VerificationService {
       const isMatch = entity?.match === true;
       const confidence = entity?.confidence || entity?.similarity_score || 0;
 
-      const MIN_CONFIDENCE = 98;
-      const verifiedMatch = isMatch && confidence >= MIN_CONFIDENCE;
+      const verifiedMatch = isMatch && confidence >= FACE_COMPARE_CONSTANTS.MIN_CONFIDENCE;
 
       return {
         success: true,
@@ -194,12 +203,12 @@ export class VerificationService {
     } catch (err: any) {
       console.error("Face comparison error:", err.response?.data || err.message);
       
-      let errorMessage = "Face comparison service temporarily unavailable";
+      let errorMessage = API_CONSTANTS.ERROR_MESSAGES.FACE_COMPARE_UNAVAILABLE;
       
-      if (err.response?.status === 400) {
-        errorMessage = "Invalid images provided. Please send clear, front-facing photos.";
-      } else if (err.response?.status === 429) {
-        errorMessage = "Too many face comparison attempts. Please try again later.";
+      if (err.response?.status === API_CONSTANTS.HTTP_STATUS.BAD_REQUEST) {
+        errorMessage = API_CONSTANTS.ERROR_MESSAGES.INVALID_IMAGES;
+      } else if (err.response?.status === API_CONSTANTS.HTTP_STATUS.TOO_MANY_REQUESTS) {
+        errorMessage = API_CONSTANTS.ERROR_MESSAGES.FACE_COMPARE_ATTEMPTS;
       }
       
       return { 

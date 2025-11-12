@@ -3,6 +3,7 @@ import { VerificationService } from "../third-party/kyc.verification.service";
 import { Donor } from "../../models/Donor";
 import { sendWhatsappMessage } from "./registration.service";
 import { VerificationStep, BotFlow } from "../../models/Enums";
+import { MEDIA_TYPES } from "../../utils/constants";
 
 export class VerificationHandler {
     private static readonly MAX_ATTEMPTS = 3;
@@ -92,7 +93,7 @@ export class VerificationHandler {
 
     private static async handleSelfieUpload(from: string, mediaUrl: string, verificationContext: any) {
         try {
-            const selfieUrl = await VerificationService.uploadMediaToS3(mediaUrl, from, 'selfie');
+            const selfieUrl = await VerificationService.uploadMediaToS3(mediaUrl, from, MEDIA_TYPES.SELFIE);
 
             await UserService.updateUserVerificationContext(from, { 
                 selfieUrl,
@@ -125,7 +126,7 @@ export class VerificationHandler {
                 );
             }
 
-            const idUrl = await VerificationService.uploadMediaToS3(mediaUrl, from, 'id');
+            const idUrl = await VerificationService.uploadMediaToS3(mediaUrl, from, MEDIA_TYPES.ID);
             const faceCompare = await VerificationService.compareFaces(selfieUrl, idUrl);
             
             await UserService.updateUserVerificationContext(from, { 
