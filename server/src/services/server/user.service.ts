@@ -51,6 +51,23 @@ export class UserService {
         return user;
     }
 
+    static async updateUserVerificationContext(
+        phoneNumber: string,
+        updates: Partial<IUser["contextData"]["verification"]>
+    ): Promise<IUser | null> {
+        const user = await User.findOne({ phoneNumber });
+        if (!user) return null;
+
+        user.contextData.verification = {
+            ...(user.contextData.verification || {}),
+            ...updates
+        };
+        
+        user.lastInteractionAt = new Date();
+        await user.save();
+        return user;
+    }
+
     static async disableUser(phoneNumber: string): Promise<IUser | null> {
         const user = await User.findOneAndUpdate(
             { phoneNumber },

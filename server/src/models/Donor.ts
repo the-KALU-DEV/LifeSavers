@@ -9,6 +9,15 @@ export interface IDonor extends IUser {
         type: "Point";
         coordinates: [number, number];
     };
+    contextData: {
+        verification: {
+            nin?: string;
+            ninResult?: any;
+            selfieUrl?: string;
+            idUrl?: string;
+            faceCompareResult?: any;
+        };
+    },
     verified: boolean;
 }
 
@@ -26,6 +35,15 @@ const DonorSchema = new Schema<IDonor>(
                 type: [Number],
                 index: "2dsphere",
             },
+        },   
+        contextData: {
+            verification: {
+                nin: { type: String },
+                ninResult: { type: Object },
+                selfieUrl: { type: String },
+                idUrl: { type: String },
+                faceCompareResult: { type: Object }
+            }
         },
         verified: { type: Boolean, default: false },
     },

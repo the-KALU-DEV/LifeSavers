@@ -1,12 +1,14 @@
 import { askFullName, sayHowItWorks, sayWelcome } from "../../messages/startup.messages";
 import { Donor } from "../../models/Donor";
-import { BotFlow, RegistrationStep, UserRole } from "../../models/Enums";
+import { BotFlow, RegistrationStep, UserRole, VerificationStep } from "../../models/Enums";
 import { sendWhatsappMessage } from "./registration.service";
 import { getState, setState } from "./state.service";
 import { UserService } from "./user.service";
+import { VerificationHandler } from "./verification.handler";
 
 
 type userState = RegistrationStep | string
+type verificationState = VerificationStep | string
 
 export async function processFlow(flow: BotFlow, state: userState, from: string, message: string, role: UserRole) {
     switch (flow) {
@@ -20,7 +22,7 @@ export async function processFlow(flow: BotFlow, state: userState, from: string,
             break;
 
         case BotFlow.VERIFICATION:
-            await processVerification(from, `Thanks, ${message}! Please share your location.`);
+            await processVerification(state, from, message);
             break;
 
         case BotFlow.MATCHING:
@@ -114,11 +116,11 @@ export async function processRegistration(currentStep: userState, from: string, 
 
             await UserService.updateUserState(from, {
                 currentFlow: BotFlow.VERIFICATION,
-                currentStep: "Start",
+                currentStep: VerificationStep.ASK_NIN,
                 contextData: { message: "Donor Is Now Registered" }
             });
 
-            return await sendWhatsappMessage(from, "✅ Registration complete! You're now part of LifeSavers.\nLet's Get You Verified");
+            return await sendWhatsappMessage(from, "✅ Registration complete! You're now part of LifeSavers.\nNow let's Get You Verified");
 
         default:
             return await sendWhatsappMessage(from, "I didn't understand that. Please start again by typing 'register'.");
@@ -209,44 +211,8 @@ export async function processDonation(from: string, message: string) {
     }
 }
 
-export async function processVerification(from: string, message: string) {
-    const state = getState(from);
-
-    switch (state) {
-        case "WELCOME":
-            await sendWhatsappMessage(from, sayWelcome());
-            setState(from, "CHOOSING_OPTION");
-            break;
-
-        case "CHOOSING_OPTION":
-            if (message === "1") {
-                await sendWhatsappMessage(from, askFullName());
-                setState(from, "ASKING_NAME");
-            } else if (message === "2") {
-                await sendWhatsappMessage(from, sayHowItWorks());
-                setState(from, "WELCOME");
-            } else {
-                await sendWhatsappMessage(from, "Please type 1 or 2 to continue.");
-            }
-            break;
-
-        case "ASKING_NAME":
-            await sendWhatsappMessage(from, `Thanks, ${message}! Please share your location.`);
-            setState(from, "ASKING_LOCATION");
-            break;
-
-        case "ASKING_LOCATION":
-            await sendWhatsappMessage(from, "✅ Location saved! Now, send your blood group (e.g., O+, A-).");
-            setState(from, "ASKING_BLOOD_GROUP");
-            break;
-
-        case "ASKING_BLOOD_GROUP":
-            await sendWhatsappMessage(from, `🎉 Registration complete!\nDonor ID: DON-${Math.floor(Math.random() * 9999)}-OG`);
-            setState(from, "REGISTERED");
-            break;
-
-        default:
-            await sendWhatsappMessage(from, "Type 'hi' to restart.");
-            setState(from, "WELCOME");
-    }
+export async function processVerification(currentStep: verificationState, from: string, message: string, mediaUrl?: string | null) {
+    await VerificationHandler.processVerification(currentStep, from, message, mediaUrl);
 }
+
+
