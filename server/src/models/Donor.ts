@@ -1,9 +1,10 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 import { IUser } from "./User";
 import { BloodGroup, Genotype } from "./Enums";
 
-export interface IDonor extends IUser {
+export interface IDonor {
     bloodGroup?: BloodGroup;
+    userId: Schema.Types.ObjectId;
     genotype?: Genotype;
     location?: {
         type: "Point";
@@ -14,6 +15,7 @@ export interface IDonor extends IUser {
 
 const DonorSchema = new Schema<IDonor>(
     {
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         bloodGroup: { type: String, enum: Object.values(BloodGroup) },
         genotype: { type: String, enum: Object.values(Genotype) },
         location: {
