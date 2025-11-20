@@ -10,7 +10,7 @@ export class UserService {
         const user = new User({
             phoneNumber: data.phoneNumber,
             role: data.role,
-            currentFlow: data.currentFlow || BotFlow.REGISTRATION,
+            currentFlow: data.currentFlow || BotFlow.WELCOME,
             currentStep: data.currentStep || "START",
             contextData: {},
         });

@@ -31,16 +31,23 @@ export enum Genotype {
 }
 
 export enum BotFlow {
-  REGISTRATION = "registration",
-  VERIFICATION = "verification",
+  WELCOME = "welcome",
+  PICK_REG_FLOW = "pick_reg_flow",
+  
+  HOSPITALREGISTRATION = "hospital_registration",
+  HOSPITALVERIFICATION = "hospital_verification",
+
+  DONORREGISTRATION = "donor_registration",
+  DONORVERIFICATION = "donor_verification",
+ 
   DONATION = "donation",
   MATCHING = "matching",
-  HOSPITAL_REGISTRATION = "hospital_registration", // Added the registration flow for the bot
 }
 
 export enum RegistrationStep {
+  GET_TYPE = "get_type",
   START = "start",
-  ROLE = "role", // Added a role for the registration
+  ROLE = "role",
   NAME = "name",
   AGE = "age",
   GENDER = "gender",
@@ -51,7 +58,7 @@ export enum RegistrationStep {
   COMPLETE = "complete",
 }
 
-export enum HospitalRegistrationStep { // Added the reusable enum for the hospital registration flow
+export enum HospitalRegistrationStep {
   START = "start",
   ROLE = "role",
   HOSPITAL_NAME = "hospital_name",
@@ -64,7 +71,7 @@ export enum HospitalRegistrationStep { // Added the reusable enum for the hospit
   COMPLETE = "complete",
 }
 
-export enum VerificationStatus { // Derived from Hospital model verificationStatus enum
+export enum VerificationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",

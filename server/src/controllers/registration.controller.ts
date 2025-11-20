@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { sendWhatsappMessage } from "../services/server/registration.service";
-import { startBot } from "../services/server/bot.service";
+import { sendWhatsappMessage, startBot } from "../services/server/bot.service";
 
 export async function handleIncomingMessage(req: Request, res: Response) {
     try {
