@@ -109,6 +109,7 @@ export class VerificationHandler {
       { phoneNumber: from },
       { 
         verified: true,
+        verificationStatus: "APPROVED",
         verificationData: {
           rcNumber,
           companyName,
