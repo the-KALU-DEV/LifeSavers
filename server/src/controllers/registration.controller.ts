@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { sendWhatsappMessage, startBot } from "../services/server/bot.service";
-import { verifyMedia } from "../utils/helpers/media.validator";
 
 export async function handleIncomingMessage(req: Request, res: Response) {
     try {
@@ -13,19 +12,16 @@ export async function handleIncomingMessage(req: Request, res: Response) {
         res.sendStatus(200);
 
         const from = req.body.From;
-        const finalBody = verifyMedia(req);
+        const body = req.body.Body?.trim();
 
-        console.log("Received message:", {
-            from,
-            body: finalBody,
-        });
+        console.log('Received message:', { from, body });
 
-        if (!from || !finalBody) {
-            console.warn("Missing from or body in request");
+        if (!from || !body) {
+            console.warn('Missing from or body in request');
             return;
         }
 
-        await startBot(from, finalBody); 
+        await startBot(from, body);
 
     } catch (err) {
         console.error("Error handling message:", err);
