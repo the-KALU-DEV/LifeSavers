@@ -41,6 +41,7 @@ export enum BotFlow {
   DONORVERIFICATION = "donor_verification",
  
   DONATION = "donation",
+  REQUEST = "request",
   MATCHING = "matching",
 }
 
@@ -76,3 +77,15 @@ export enum VerificationStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
 }
+
+export enum VerificationStep {
+    START = "start",
+    ASK_NIN = "ask_nin",
+    ASK_SELFIE = "ask_selfie",
+    ASK_ID = "ask_id",
+    ASK_BANK = "ask_bank",
+    ASK_CAC = "ask_cac",  
+    COMPLETE = "complete",
+    VERIFICATION_FAILED = "verification_failed",
+}
+

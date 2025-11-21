@@ -1,5 +1,6 @@
 import { BotFlow } from "../../models/Enums";
 import { IUser, User } from "../../models/User";
+import { VerificationContext } from "../../types/verification.types";
 
 
 export class UserService {
@@ -48,6 +49,23 @@ export class UserService {
             updates,
             { new: true }
         );
+        return user;
+    }
+
+    static async updateUserVerificationContext(
+        phoneNumber: string,
+        updates: Partial<IUser["contextData"]["verification"]>
+    ): Promise<IUser | null> {
+        const user = await User.findOne({ phoneNumber });
+        if (!user) return null;
+
+        user.contextData.verification = {
+            ...(user.contextData.verification || {}),
+            ...updates
+        };
+        
+        user.lastInteractionAt = new Date();
+        await user.save();
         return user;
     }
 
