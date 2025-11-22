@@ -89,3 +89,29 @@ export enum VerificationStep {
     VERIFICATION_FAILED = "verification_failed",
 }
 
+export enum UrgencyLevel {
+  LOW = "low",
+  MEDIUM = "medium", 
+  HIGH = "high",
+  EMERGENCY = "emergency"
+}
+
+export enum RequestStatus {
+  CREATED = "created",
+  ACTIVE = "active",
+  PARTIALLY_FULFILLED = "partially_fulfilled", 
+  FULFILLED = "fulfilled",
+  CANCELLED = "cancelled",
+  EXPIRED = "expired"
+}
+
+export enum RequestStep {
+  START = "start",
+  BLOOD_TYPE = "blood_type",
+  GENOTYPE = "genotype",
+  UNITS_NEEDED = "units_needed",
+  URGENCY = "urgency",
+  DEADLINE = "deadline",
+  CONFIRM = "confirm",
+  COMPLETE = "complete",
+}
