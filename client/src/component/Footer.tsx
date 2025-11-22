@@ -4,10 +4,9 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="px-[39px] py-[40px] border-t border-t-white/10 mt-10 text-[14px]">
-      <div className="flex flex-col gap-[32px]">
-        <section className="flex justify-between border">
-          {/*  */}
+    <div className="px-4 lg:px-[39px] py-[40px] border-t border-t-white/10 mt-10 text-[14px]">
+      <div className="flex flex-col gap-[32px] w-full lg:w-[992px] mx-auto">
+        <section className="flex flex-col lg:flex-row justify-between gap-8 lg:gap-0">
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-[8px] text-white">
               <Image
@@ -19,13 +18,13 @@ const Footer = () => {
               <p>LifeSaver</p>
             </div>
             <div>
-              <p className="text-[#6A7282] w-[280px]">
+              <p className="text-[#6A7282] w-full lg:w-[280px]">
                 Connecting people who need blood with people who can help.
                 Simple, fast, and on WhatsApp.
               </p>
             </div>
           </div>
-          {/* quick links */}
+
           <div className="flex flex-col gap-[6px]">
             <h3 className="uppercase text-white">quick links</h3>
             <nav className="flex flex-col text-[#6A7282]">
@@ -34,6 +33,7 @@ const Footer = () => {
               <Link href="#hospital">for hospitals</Link>
             </nav>
           </div>
+
           <div className="flex flex-col gap-[6px]">
             <h3 className="uppercase text-white">get help</h3>
             <div className="text-[#6A7282] flex flex-col gap-[6px]">
@@ -43,9 +43,10 @@ const Footer = () => {
             </div>
           </div>
         </section>
-        <section className="flex justify-between text-[#6A7282] border-t border-t-white/10 py-[19px]">
+
+        <section className="flex flex-col lg:flex-row justify-between gap-4 lg:gap-0 text-[#6A7282] border-t border-t-white/10 py-[19px] text-center lg:text-left">
           <p>&copy; 2025 LifeSaver. Every donation saves 3 lives</p>
-          <p className="flex items-center gap-2">
+          <p className="flex items-center justify-center lg:justify-start gap-2">
             Made with{" "}
             <span>
               <Image
@@ -53,7 +54,7 @@ const Footer = () => {
                 alt="a love emoji"
                 width={13}
                 height={11}
-              />{" "}
+              />
             </span>
             for humanity
           </p>

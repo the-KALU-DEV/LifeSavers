@@ -1,4 +1,6 @@
-import React from 'react'
+"use client";
+
+import { motion } from "motion/react";
 
 const hospitalFlow = [
   {
@@ -25,38 +27,54 @@ const hospitalFlow = [
 
 const HospitalSection = () => {
   return (
-    <div className="flex flex-col justify-center items-center gap-[80px] px-[39px] py-[80px] w-full ">
-      <div className="flex flex-col justify-center items-center">
-        <h3 className="text-[52px] capitalize">for hospitals & blood banks</h3>
-        <p className="text-[20px] text-[#99A1AF] w-full text-center">
-          When every second counts, find verified donors instantly through
-          WhatsApp.
-        </p>
-      </div>
+    <div className="flex flex-col justify-center items-center gap-[40px] lg:gap-[80px] px-4 lg:px-[39px] py-[60px] lg:py-[80px] w-full">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeInOut"}}
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <div className="flex flex-col justify-center items-center">
+          <h3 className="text-[32px] lg:text-[52px] capitalize text-center">
+            for hospitals & blood banks
+          </h3>
+          <p className="text-[16px] lg:text-[20px] text-[#99A1AF] w-full text-center px-4">
+            When every second counts, find verified donors instantly through
+            WhatsApp.
+          </p>
+        </div>
+      </motion.div>
 
-      {/*  */}
-
-      {/* cards */}
-      <div className="grid grid-cols-4 gap-[24px]">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-[24px] w-full max-w-[1000px]">
         {hospitalFlow.map((item, index) => (
+                <motion.div
+                key={index}
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeInOut", delay: index * 0.5 }}
+        viewport={{ once: true, amount: 0.3 }}
+      >
+
           <div
-            key={index}
-            className="flex flex-col gap-3 h-[220px] w-[230px] rounded-xl bg-gradient-to-r from-white/5 to-black  border border-gray-800 p-5"
+            className="flex flex-col gap-3 h-auto lg:h-[220px] w-full lg:w-[230px] rounded-xl bg-gradient-to-r from-white/5 to-black border border-gray-800 p-5"
           >
             <div className="flex justify-center items-center w-[40px] h-[40px] rounded-full bg-gradient-to-r from-[#E7000B4D] to-[#155DFC4D]">
               {item.stage}
             </div>
 
-            <h3 className="text-[18px] capitalize">{item.title}</h3>
+            <h3 className="text-[16px] lg:text-[18px] capitalize">
+              {item.title}
+            </h3>
 
-            <p className="text-[14px] text-[#99A1AF] w-[166px]">
+            <p className="text-[14px] text-[#99A1AF] w-full lg:w-[166px]">
               {item.message}
             </p>
           </div>
+            </motion.div>
         ))}
       </div>
     </div>
   );
-}
+};
 
-export default HospitalSection
+export default HospitalSection;

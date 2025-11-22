@@ -1,52 +1,48 @@
-'use client'
+"use client";
 
-import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { motion } from "motion/react";
 
 const faqs = [
   {
     question: "How do I sign up as a donor?",
     answer:
-      "Simply click the 'I'm Ready to Help' button and follow the WhatsApp prompts. You'll provide basic information including your blood type, contact details, and location. The entire process takes less than 2 minutes.",
+      "Simply send a WhatsApp message to [Our Bot Number] saying 'Hi' or 'I want to donate blood'. Our bot will guide you through a quick registration process where you'll share your blood type and location.",
   },
   {
     question: "How often can I donate?",
     answer:
-      "You can donate whole blood every 3 months (12 weeks). For platelet donations, you can donate every 2 weeks. We'll send you reminders when you're eligible to donate again.",
+      "Once every three months is advised as your body needs time to heal after each donation",
   },
   {
     question: "Is my personal information safe?",
     answer:
-      "Absolutely. We use end-to-end encryption and only share your contact information with verified hospitals when there's a matching blood request. Your data is never sold or shared with third parties.",
+      "Yes. Your personal details remain private and secure. We never share your phone number or other sensitive data.",
   },
   {
     question: "How does the hospital request process work?",
     answer:
-      "When a hospital needs blood, they submit a request through our system specifying the blood type needed. We then notify compatible donors in the area via WhatsApp. Donors can respond if they're available to help.",
+      "Hospitals send a WhatsApp message with the blood type needed, urgency level, and location. Our AI system instantly searches for verified donors nearby and notifies all matching candidates. Hospitals receive donor confirmations within minutes.",
   },
   {
     question: "Can I donate if I have health conditions?",
     answer:
-      "It depends on the condition. Common disqualifiers include recent tattoos, certain medications, low iron levels, or active infections. When you sign up, we'll ask screening questions, and hospitals will do a final check before donation.",
-  },
-  {
-    question: "What happens after I confirm I can donate?",
-    answer:
-      "Once you confirm availability, the hospital will contact you directly with the location and time. You'll go to the hospital or blood bank, undergo a quick health screening, and then donate. The entire process usually takes 45-60 minutes.",
+      "Eligibility to donate blood depends on the type and severity of the medical condition. This assessment is done to ensure the safety of both the donor and the recipient.",
   },
   {
     question: "Is there a cost to use Lifesaver?",
     answer:
-      "No, Lifesaver is completely free for donors. We believe saving lives should be accessible to everyone. Hospitals pay a small subscription fee to access our network of verified donors.",
+      "No. Lifesaver is completely free for both donors and hospitals. Our mission is to save lives by connecting those who need blood with those who can help.",
   },
   {
     question: "How are donors verified?",
     answer:
-      "We verify donors through phone number authentication, blood type documentation (if available), and maintain a track record of successful donations. Hospitals also conduct their own screening before accepting donations.",
+      "All donors go through a pre-screening process during registration. We collect essential health information and verify contact details. Hospitals also conduct their standard screening before accepting any donation.",
   },
 ];
 
-export default function FAQSection() {
+const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleFAQ = (i: number) => {
@@ -54,45 +50,70 @@ export default function FAQSection() {
   };
 
   return (
-    <div className="w-full bg-black text-white py-20 px-6">
-      {/* Heading */}
-      <div className="text-center mb-12">
-        <h2 className="text-[52px]">Frequently Asked Questions</h2>
-        <p className="text-[#99A1AF] mt-4 text-[20px]">
-          Everything you need to know about Lifesaver
-        </p>
-      </div>
+    <div
+      id="faq"
+      className="w-full bg-black text-white py-[60px] lg:py-20 px-4 lg:px-6"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+        viewport={{ once: true, amount: 0.3 }}
+      >
+        <div className="text-center mb-12">
+          <h2 className="text-[32px] lg:text-[52px]">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-[#99A1AF] mt-4 text-[16px] lg:text-[20px] px-4">
+            Everything you need to know about Lifesaver
+          </p>
+        </div>
+      </motion.div>
 
-      {/* Main container */}
       <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#4C69BE4D]/50 backdrop-blur-xl rounded-2xl border border-white/10 p-2">
-        {faqs.map((faq, i) => (
-          <div key={i} className="border-b border-white/10 last:border-none">
-            <button
-              className="w-full flex justify-between items-center py-5 px-6 text-left hover:bg-white/5 transition-colors rounded-lg"
-              onClick={() => toggleFAQ(i)}
-            >
-              <span className="text-base font-medium pr-4">{faq.question}</span>
+        {faqs.map((faq, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: index * 0.5 }}
+            viewport={{ once: true, amount: 0.3 }}
+            className="border-b border-white/10 last:border-none"
+          >
+            <div>
+              <button
+                className="w-full flex justify-between items-center py-4 lg:py-5 px-4 lg:px-6 text-left hover:bg-white/5 transition-colors rounded-lg"
+                onClick={() => toggleFAQ(index)}
+              >
+                <span className="text-sm lg:text-base font-medium pr-4">
+                  {faq.question}
+                </span>
 
-              <ChevronDown
-                className={`flex-shrink-0 transition-transform duration-300 ${
-                  openIndex === i ? "rotate-180" : ""
+                <ChevronDown
+                  className={`flex-shrink-0 transition-transform duration-300 ${
+                    openIndex === index ? "rotate-180" : ""
+                  }`}
+                  size={20}
+                />
+              </button>
+
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  openIndex === index
+                    ? "max-h-96 opacity-100"
+                    : "max-h-0 opacity-0"
                 }`}
-                size={20}
-              />
-            </button>
-
-            <div
-              className={`overflow-hidden transition-all duration-300 ${
-                openIndex === i ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="px-6 pb-5 text-gray-400 text-sm leading-relaxed">
-                {faq.answer}
+              >
+                <div className="px-4 lg:px-6 pb-5 text-gray-400 text-sm leading-relaxed">
+                  {faq.answer}
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
   );
-}
+};
+
+export default FAQSection;
