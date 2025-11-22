@@ -17,7 +17,7 @@ export async function startBot(phoneNumber: string, message: string) {
         });
     }
 
-    let currentFlow = user.currentFlow;
+    let currentFlow = user.currentFlow; 
     let userState = user.currentStep;
     let userRole = user.role;
 
