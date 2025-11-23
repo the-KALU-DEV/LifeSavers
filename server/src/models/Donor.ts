@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 import { IUser } from "./User";
-import { BloodGroup, Genotype } from "./Enums";
+import { BloodGroup, EligibilityStatus, Genotype } from "./Enums";
 
 export interface IDonor {
     bloodGroup?: BloodGroup;
@@ -19,6 +19,7 @@ export interface IDonor {
             faceCompareResult?: any;
         };
     },
+    eligibilityStatus?: EligibilityStatus
     verified: boolean;
 }
 
@@ -45,8 +46,10 @@ const DonorSchema = new Schema<IDonor>(
                 selfieUrl: { type: String },
                 idUrl: { type: String },
                 faceCompareResult: { type: Object }
-            }
+            },
+            //acceptance?: AcceptanceContext
         },
+        eligibilityStatus: { type: String, enum: Object.values(EligibilityStatus), default: EligibilityStatus.PENDING },
         verified: { type: Boolean, default: false },
     },
     { timestamps: true }

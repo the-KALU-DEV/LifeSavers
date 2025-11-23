@@ -39,7 +39,8 @@ export enum BotFlow {
 
   DONORREGISTRATION = "donor_registration",
   DONORVERIFICATION = "donor_verification",
- 
+  
+  REQUESTACCEPTANCE = "acceptance",
   DONATION = "donation",
   REQUEST = "request",
   MATCHING = "matching",
@@ -114,4 +115,26 @@ export enum RequestStep {
   DEADLINE = "deadline",
   CONFIRM = "confirm",
   COMPLETE = "complete",
+}
+
+export enum EligibilityStatus {
+  PENDING = "pending",
+  ELIGIBLE = "eligible",
+  TEMPORARILY_ELIGIBLE = "ineligible",
+  INELIGIBLE = "permanently_ineligible"
+}
+
+export enum AcceptanceStatus {
+  PENDING = "pending",
+  ACCEPTED = "confirmed", 
+  CANCELLED = "cancelled"
+}
+
+export enum AcceptanceStep {
+  START = "start",
+  SELECT_REQUEST = "select_request", 
+  PLEDGE_UNITS = "pledge_units",
+  CONFIRM_AVAILABILITY = "confirm_availability",
+  FINAL_CONFIRM = "final_confirm",
+  COMPLETE = "complete"
 }

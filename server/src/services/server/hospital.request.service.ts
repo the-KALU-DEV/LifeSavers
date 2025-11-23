@@ -21,7 +21,7 @@ export class HospitalRequestService {
   }
 
   static async processRequestCreation(
-    currentStep: RequestStep,
+    currentStep: string,
     from: string,
     message: string
   ): Promise<void> {

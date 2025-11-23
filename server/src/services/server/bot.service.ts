@@ -3,6 +3,7 @@ import { BotFlow, RegistrationStep, UserRole } from "../../models/Enums";
 import { userState } from "../../types";
 import { VerificationHandler } from "../../utils/handlers/verification.handler";
 import { processDonation } from "./donation.service";
+import { HospitalRequestService } from "./hospital.request.service";
 import { getRegistrationType, processDonorRegistration, processHospitalRegistration, setRegistrationType } from "./registration.service";
 import { UserService } from "./user.service";
 
@@ -52,7 +53,9 @@ export async function processFlow(
         case BotFlow.DONATION:
             await processDonation(from, message);
             break;
-
+        case BotFlow.REQUEST:
+            await HospitalRequestService.processRequestCreation(state, from, message);
+            break;
         case BotFlow.DONORVERIFICATION:
             await VerificationHandler.processVerification(state, from, message, role);
             break;

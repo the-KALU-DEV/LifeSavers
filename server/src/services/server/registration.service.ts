@@ -293,7 +293,7 @@ export async function processDonorRegistration(
 
             await UserService.updateUserState(from, {
                 //currentFlow: BotFlow.DONORVERIFICATION,
-                currentFlow: BotFlow.DONATION,
+                currentFlow: BotFlow.REQUESTACCEPTANCE,
                 currentStep: "Start",
                 contextData: { message: "Donor Is Now Registered" },
             });
