@@ -177,7 +177,8 @@ export const processHospitalRegistration = async (
             });
 
             await UserService.updateUserState(from, {
-                currentFlow: BotFlow.HOSPITALVERIFICATION,
+                //currentFlow: BotFlow.HOSPITALVERIFICATION,
+                currentFlow: BotFlow.REQUEST,
                 currentStep: HospitalRegistrationStep.COMPLETE,
                 contextData: {}
             });
@@ -291,7 +292,8 @@ export async function processDonorRegistration(
             });
 
             await UserService.updateUserState(from, {
-                currentFlow: BotFlow.DONORVERIFICATION,
+                //currentFlow: BotFlow.DONORVERIFICATION,
+                currentFlow: BotFlow.REQUESTACCEPTANCE,
                 currentStep: "Start",
                 contextData: { message: "Donor Is Now Registered" },
             });

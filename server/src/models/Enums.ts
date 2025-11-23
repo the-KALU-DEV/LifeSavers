@@ -39,8 +39,10 @@ export enum BotFlow {
 
   DONORREGISTRATION = "donor_registration",
   DONORVERIFICATION = "donor_verification",
- 
+  
+  REQUESTACCEPTANCE = "acceptance",
   DONATION = "donation",
+  REQUEST = "request",
   MATCHING = "matching",
 }
 
@@ -75,4 +77,64 @@ export enum VerificationStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
+}
+
+export enum VerificationStep {
+    START = "start",
+    ASK_NIN = "ask_nin",
+    ASK_SELFIE = "ask_selfie",
+    ASK_ID = "ask_id",
+    ASK_BANK = "ask_bank",
+    ASK_CAC = "ask_cac",  
+    COMPLETE = "complete",
+    VERIFICATION_FAILED = "verification_failed",
+}
+
+export enum UrgencyLevel {
+  LOW = "low",
+  MEDIUM = "medium", 
+  HIGH = "high",
+  EMERGENCY = "emergency"
+}
+
+export enum RequestStatus {
+  CREATED = "created",
+  ACTIVE = "active",
+  PARTIALLY_FULFILLED = "partially_fulfilled", 
+  FULFILLED = "fulfilled",
+  CANCELLED = "cancelled",
+  EXPIRED = "expired"
+}
+
+export enum RequestStep {
+  START = "start",
+  BLOOD_TYPE = "blood_type",
+  GENOTYPE = "genotype",
+  UNITS_NEEDED = "units_needed",
+  URGENCY = "urgency",
+  DEADLINE = "deadline",
+  CONFIRM = "confirm",
+  COMPLETE = "complete",
+}
+
+export enum EligibilityStatus {
+  PENDING = "pending",
+  ELIGIBLE = "eligible",
+  TEMPORARILY_ELIGIBLE = "ineligible",
+  INELIGIBLE = "permanently_ineligible"
+}
+
+export enum AcceptanceStatus {
+  PENDING = "pending",
+  ACCEPTED = "confirmed", 
+  CANCELLED = "cancelled"
+}
+
+export enum AcceptanceStep {
+  START = "start",
+  SELECT_REQUEST = "select_request", 
+  PLEDGE_UNITS = "pledge_units",
+  CONFIRM_AVAILABILITY = "confirm_availability",
+  FINAL_CONFIRM = "final_confirm",
+  COMPLETE = "complete"
 }

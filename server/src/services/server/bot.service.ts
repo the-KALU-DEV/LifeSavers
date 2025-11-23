@@ -1,7 +1,9 @@
 import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER } from "../../config/env";
 import { BotFlow, RegistrationStep, UserRole } from "../../models/Enums";
 import { userState } from "../../types";
+import { VerificationHandler } from "../../utils/handlers/verification.handler";
 import { processDonation } from "./donation.service";
+import { HospitalRequestService } from "./hospital.request.service";
 import { getRegistrationType, processDonorRegistration, processHospitalRegistration, setRegistrationType } from "./registration.service";
 import { UserService } from "./user.service";
 
@@ -51,9 +53,11 @@ export async function processFlow(
         case BotFlow.DONATION:
             await processDonation(from, message);
             break;
-
+        case BotFlow.REQUEST:
+            await HospitalRequestService.processRequestCreation(state, from, message);
+            break;
         case BotFlow.DONORVERIFICATION:
-            //await processVerification(from, message);
+            await VerificationHandler.processVerification(state, from, message, role);
             break;
         case BotFlow.MATCHING:
             await sendWhatsappMessage(
